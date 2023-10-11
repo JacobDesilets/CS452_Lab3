@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
+            <title>Lab 3</title>
+            <script type="text/javascript" src="Common/webgl-utils.js"></script>
+            <script type="text/javascript" src="Common/initShaders.js"></script>
+            <script type="text/javascript" src="Common/MV.js"></script>
+            <script type="text/javascript" src="lab3.js"></script>
+            
+            <script type="x-shader/x-vertex" id="vertex-shader">
+                attribute vec4 myPosition;
+                attribute vec4 myColor;
+                varying vec4 vColor;
+
+                uniform mat4 matX;
+                uniform mat4 matY;
+                uniform mat4 matZ;
+
+                void main() {
+                    gl_Position = matZ * matY * matX * myPosition;
+                    vColor = myColor;
+                }
+                </script>
+            
+            <script type="x-shader/x-fragment" id="fragment-shader">
+                precision mediump float;
+                varying vec4 vColor;
+                void main() {
+                    gl_FragColor = vColor;
+                }
+            </script>
+    </head>
+    
+    <body onload = "init()" style="margin:0px; font-family: system-ui;" onkeydown="inputDown(event);" onkeyup="inputUp(event);">
+        <div style="display: flex; gap:1rem; padding: 1rem;">
+            <canvas id="gl-canvas" width="512" height="512"></canvas><br/>
+            <div>
+                <h1>CS452 Lab 3</h1>
+                <h3>Jacob DeRosa and Jacob Desilets</h3>
+                <table>
+                    <tr>
+                        <th>Key</th>
+                        <th>Action</th>
+                    </tr>
+                    <tr>
+                        <td><b>x</b></td>
+                        <td>Rotate about the x axis</td>
+                    </tr>
+                    <tr>
+                        <td><b>y</b></td>
+                        <td>Rotate about the y axis</td>
+                    </tr>
+                    <tr>
+                        <td><b>z</b></td>
+                        <td>Rotate about the z axis</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        
+    </body>
+</html>
+
