@@ -1,9 +1,9 @@
 let gl;
 let shaderProgram;
 
-let alpha, beta, gamma;
-let matX, matY, matZ;
-let matXUni, matYUni, matZUni;
+let alpha, beta, gamma, xinc, yinc, sx, sy, mtx, mty, msx, msy;
+let matX, matY, matZ, tranX, tranY, scale_X, scale_Y;
+let matXUni, matYUni, matZUni, tranXUni, tranYUni, scaleXUni, scaleYUni;
 
 let inputs = {};
 
@@ -20,6 +20,14 @@ function init() {
     alpha = .0;
     beta = .0;
     gamma = .0;
+    xinc = .0;
+    yinc = .0;
+    sx = 1.0;
+    sy = 1.0;
+    mtx = 1.0;
+    mty = 1.0;
+    msx = 1.0;
+    msy = 1.0;
 
     matX = [1,
             .0,
@@ -70,7 +78,27 @@ function init() {
             .0,
             .0,
             .0,
-            1.0]
+            1.0];
+
+    tranX = [1.0, .0, .0, .0,
+             .0, 1.0, .0, .0,
+             .0, .0, 1.0, .0,
+            xinc, .0, .0, 1.0];
+
+    tranY = [1.0, .0, .0, .0,
+             .0, 1.0, .0, .0,
+             .0, .0, 1.0, .0,
+             .0, yinc, .0, 1.0];
+
+    scale_X = [sx, .0, .0, .0,
+              .0, 1.0, .0, .0,
+              .0, .0, 1.0, .0,
+              .0, .0, .0, 1.0];
+
+    scale_Y = [1.0, .0, .0, .0,
+              .0, sy, .0, .0,
+              .0, .0, 1.0, .0,
+              .0, .0, 0, 1.0];
 
 
     shaderProgram = initShaders( gl,"vertex-shader", "fragment-shader" );
@@ -79,10 +107,18 @@ function init() {
     matXUni = gl.getUniformLocation(shaderProgram, "matX");
     matYUni = gl.getUniformLocation(shaderProgram, "matY");
     matZUni = gl.getUniformLocation(shaderProgram, "matZ");
+    tranXUni = gl.getUniformLocation(shaderProgram, "tranX");
+    tranYUni = gl.getUniformLocation(shaderProgram, "tranY");
+    scaleXUni = gl.getUniformLocation(shaderProgram, "scale_X");
+    scaleYUni = gl.getUniformLocation(shaderProgram, "scale_Y");
 
     gl.uniformMatrix4fv(matXUni, false, matX);
     gl.uniformMatrix4fv(matYUni, false, matY);
     gl.uniformMatrix4fv(matZUni, false, matZ);
+    gl.uniformMatrix4fv(tranXUni, false, tranX);
+    gl.uniformMatrix4fv(tranYUni, false, tranY);
+    gl.uniformMatrix4fv(scaleXUni, false, scale_X);
+    gl.uniformMatrix4fv(scaleYUni, false, scale_Y);
 
     // will include depth test to render faces correctly!
     gl.enable( gl.DEPTH_TEST );
@@ -144,6 +180,18 @@ function render() {
     }
     if(inputs['z']) {
         rotateAroundZ();
+    }
+    if(inputs['q']) {
+        scaleX();
+    }
+    if(inputs['w']) {
+        scaleY();
+    }
+    if(inputs['a']) {
+        translateX();
+    }
+    if(inputs['s']) {
+        translateY();
     }
 
 
@@ -228,4 +276,64 @@ function inputDown(event) {
 
 function inputUp(event) {
     inputs[event.key] = false;
+}
+
+function scaleX() {
+    sx += msx * 0.05;
+    if(sx > 5.0) {
+        msx = -1.0;
+    }
+    if(sx < 1.0) {
+        msx = 1.0;
+    }
+    scale_X = [sx, .0, .0, .0,
+              .0, 1.0, 0, 0,
+              .0, .0, 1.0, .0,
+              .0, .0, .0, 1.0];
+    gl.uniformMatrix4fv(scaleXUni, false, scale_X);
+}
+
+function scaleY() {
+    sy += msy * 0.05;
+    if(sy > 5.0) {
+        msy = -1.0;
+    }
+    if(sy < 1.0) {
+        msy = 1.0;
+    }
+    scale_Y = [1.0, .0, .0, .0,
+              .0, sy, .0, .0,
+              .0, .0, 1.0, .0,
+              .0, .0, .0, 1.0];
+    gl.uniformMatrix4fv(scaleYUni, false, scale_Y);
+}
+
+function translateX() {
+    xinc += mtx * 0.05;
+    if(xinc > 1) {
+        mtx = -1.0;
+    }
+    if(xinc < -1) {
+        mtx = 1.0;
+    }
+    tranX = [1.0, .0, .0, .0,
+             .0, 1.0, .0, .0,
+             .0, .0, 1.0, .0,
+             xinc, .0, .0, 1.0];
+    gl.uniformMatrix4fv(tranXUni, false, tranX);
+}
+
+function translateY() {
+    yinc += mty * 0.05;
+    if(yinc > 1) {
+        mty = -1.0;
+    }
+    if(yinc < -1) {
+        mty = 1.0;
+    }
+    tranY = [1.0, .0, .0, .0,
+             .0, 1.0, .0, .0,
+             .0, .0, 1.0, .0,
+             .0, yinc, .0, 1.0];
+    gl.uniformMatrix4fv(tranYUni, false, tranY);
 }

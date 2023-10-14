@@ -16,9 +16,17 @@
                 uniform mat4 matX;
                 uniform mat4 matY;
                 uniform mat4 matZ;
+                uniform mat4 tranX;
+                uniform mat4 tranY;
+                uniform mat4 scale_X;
+                uniform mat4 scale_Y;
+                varying mat4 tmp;
+                varying mat4 tmp2;
 
                 void main() {
-                    gl_Position = matZ * matY * matX * myPosition;
+                    tmp = tranY * tranX * matZ * matY * matX;
+                    tmp2 = tmp * scale_Y * scale_X;
+                    gl_Position = tmp2 * myPosition;
                     vColor = myColor;
                 }
                 </script>
@@ -54,6 +62,21 @@
                     <tr>
                         <td><b>z</b></td>
                         <td>Rotate about the z axis</td>
+                    </tr><tr>
+                        <td><b>q</b></td>
+                        <td>Scale about the x axis</td>
+                    </tr>
+                    <tr>
+                        <td><b>w</b></td>
+                        <td>Scale about the y axis</td>
+                    </tr>
+                    <tr>
+                        <td><b>a</b></td>
+                        <td>Translate along the x axis</td>
+                    </tr>
+                    <tr>
+                        <td><b>s</b></td>
+                        <td>Translate along the y axis</td>
                     </tr>
                 </table>
             </div>
